@@ -5,16 +5,49 @@ export default function Form() {
     const [selectedTemplate, setSelectedTemplate] = useState('');
     const [selectedFaculty, setSelectedFaculty] = useState('');
     const [file, setFile] = useState(null);
+    const BACKEND_API = process.env.REACT_APP_BACKEND_API;
 
     const templates = ['Шаблон 1', 'Шаблон 2', 'Шаблон 3'];
     const faculties = ['Факультет графики и искусства книги имени В.А. Фаворского', 'Факультет издательского дела и журналистики', 'Факультет информационных технологий', 'Факультет машиностроения', 'Полиграфический факультет', 'Транспортный факультет', 'Факультет урбанистики и городского хозяйства', 'Факультет химической технологии и биотехнологии', 'Факультет экономики и управления'];
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Здесь можно обработать данные формы
-        console.log('Файл:', file);
-        console.log('Шаблон:', selectedTemplate);
-        console.log('Факультет:', selectedFaculty);
+
+        if (!file || !selectedTemplate || !selectedFaculty) {
+            alert("Заполните все поля и выберите файл.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('template', selectedTemplate);
+        formData.append('faculty', selectedFaculty);
+
+        try {
+            const response = await fetch(`${BACKEND_API}/submit`, {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error('Ошибка при отправке данных');
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'coursework.pdf';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            alert('Данные успешно отправлены и файл скачан!');
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Произошла ошибка при отправке.');
+        }
     };
 
     return (
@@ -23,7 +56,7 @@ export default function Form() {
                 <form onSubmit={handleSubmit}>
                     <div className="form__group">
                         <label htmlFor="file">Загрузить файл:</label>
-                        <input type="file" id="file" onChange={(e) => setFile(e.target.files[0])}/>
+                        <input type="file" id="file" onChange={(e) => setFile(e.target.files[0])} />
                     </div>
 
                     <div className="form__group">
