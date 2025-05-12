@@ -27,13 +27,7 @@ export default function Login() {
 
                 <div className="login__group">
                     <label>Пароль</label>
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Введите пароль"
-                        required
-                    />
+                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Введите пароль" required/>
                 </div>
 
                 {error && <div className="login__error">{error}</div>}
