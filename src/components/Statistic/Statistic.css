@@ -1,0 +1,29 @@
+.statistic__container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+.statistic__title {
+    font-size: 2rem;
+    color: #ffffff;
+    text-align: center;
+}
+
+.statistic__content {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+@media (max-width: 1220px) {
+    .statistic__content {
+        flex-direction: column;
+        align-items: center;
+    }
+}

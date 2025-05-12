@@ -2,6 +2,7 @@ import './main.css';
 import Form from './components/Form/Form';
 import Login from './components/Login/Login';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Statistic from './components/Statistic/Statistic';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<Form />} />
           <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/statistic" element={<Statistic />} />
         </Routes>
       </div>
     </Router>
