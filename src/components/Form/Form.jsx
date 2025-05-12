@@ -5,6 +5,9 @@ export default function Form() {
     const [selectedTemplate, setSelectedTemplate] = useState('');
     const [selectedFaculty, setSelectedFaculty] = useState('');
     const [file, setFile] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isDownloading, setIsDownloading] = useState(false);
+    const [progress, setProgress] = useState(0);
     const BACKEND_API = process.env.REACT_APP_BACKEND_API;
 
     const templates = ['Шаблон 1', 'Шаблон 2', 'Шаблон 3'];
@@ -18,10 +21,13 @@ export default function Form() {
             return;
         }
 
+        setIsSubmitting(true);
+        setProgress(0);
         const formData = new FormData();
         formData.append('file', file);
         formData.append('template', selectedTemplate);
         formData.append('faculty', selectedFaculty);
+        setProgress(40);
 
         try {
             const response = await fetch(`${BACKEND_API}/submit`, {
@@ -31,7 +37,13 @@ export default function Form() {
 
             if (!response.ok) {
                 throw new Error('Ошибка при отправке данных');
+                setProgress(0);
+                setIsSubmitting(false);
             }
+
+            setIsSubmitting(false);
+            setProgress(75);
+            setIsDownloading(true);
 
             const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);
@@ -42,12 +54,24 @@ export default function Form() {
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-
-            alert('Данные успешно отправлены и файл скачан!');
+            setProgress(100);
         } catch (error) {
             console.error('Ошибка:', error);
-            alert('Произошла ошибка при отправке.');
+            setProgress(0);
+            setIsSubmitting(false);
+        } finally {
+            setIsDownloading(false);
         }
+    };
+
+    const getButtonText = () => {
+        if (isSubmitting) {
+            return 'Отправляем...';
+        }
+        if (isDownloading) {
+            return 'Скачиваем...';
+        }
+        return 'Отправить';
     };
 
     return (
@@ -79,7 +103,10 @@ export default function Form() {
                         </select>
                     </div>
 
-                    <button type="submit">Отправить</button>
+                    <button type="submit" disabled={isSubmitting || isDownloading}
+                            style={{background: progress != 0 ? `linear-gradient(to right, #4f46e5 ${progress}%, #ddd ${progress}%)` : '',}}>
+                        {getButtonText()}
+                    </button>
                 </form>
             </div>
         </div>
