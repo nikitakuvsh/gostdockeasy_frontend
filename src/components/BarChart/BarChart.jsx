@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -8,29 +8,27 @@ import {
   Title,
   Tooltip,
   Legend,
-  scales,
 } from "chart.js";
 import "./BarChart.css";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 export default function BarChart() {
-  const usageData = [
-    { date: "Январь 2025", count: 120 },
-    { date: "Февраль 2025", count: 150 },
-    { date: "Март 2025", count: 100 },
-    { date: "Апрель 2025", count: 180 },
-    { date: "Май 2025", count: 130 },
-    { date: "Июнь 2025", count: 200 },
-    { date: "Июль 2025", count: 170 },
-  ];
+  const [usageData, setUsageData] = useState([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_API}/stats_month`);
+        const data = await response.json();
+        setUsageData(data);
+      } catch (error) {
+        console.error("Ошибка при загрузке статистики:", error);
+      }
+    }
+
+    fetchData();
+  }, []);
 
   const data = {
     labels: usageData.map((item) => item.date),
@@ -48,9 +46,7 @@ export default function BarChart() {
   const options = {
     responsive: true,
     plugins: {
-      legend: {
-        position: "top",
-      },
+      legend: { position: "top" },
       tooltip: {
         callbacks: {
           label: (context) => `${context.dataset.label}: ${context.parsed.y} конверсий`,
@@ -60,26 +56,20 @@ export default function BarChart() {
     scales: {
       y: {
         beginAtZero: true,
-        title: {
-          display: true,
-          text: "Количество конверсий",
-        },
+        title: { display: true, text: "Количество конверсий" },
       },
       x: {
-        title: {
-          display: true,
-          text: "Дата",
-        },
+        title: { display: true, text: "Дата" },
       },
     },
   };
 
   return (
     <div className="chart__container">
-        <h2 className="chart__title">Статистика использования конвертора за последние месяцы</h2>
-        <div className="chart__content">
-            <Bar data={data} options={options} />
-        </div>
+      <h2 className="chart__title">Статистика использования конвертора за последние месяцы</h2>
+      <div className="chart__content">
+        <Bar data={data} options={options} />
+      </div>
     </div>
   );
-};
+}
