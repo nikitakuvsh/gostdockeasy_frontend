@@ -20,3 +20,35 @@
 .pie-chart__content {
   height: 400px;
 }
+
+@media (max-width: 768px) {
+  .pie-chart__container {
+    max-height: 450px;
+    max-width: 350px;
+    padding: 15px;
+  }
+
+  .pie-chart__title {
+    font-size: 1.25rem;
+  }
+
+  .pie-chart__content {
+    height: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pie-chart__container {
+    max-height: 400px;
+    max-width: 100%;
+    padding: 10px;
+  }
+
+  .pie-chart__title {
+    font-size: 1rem;
+  }
+
+  .pie-chart__content {
+    height: 250px;
+  }
+}
