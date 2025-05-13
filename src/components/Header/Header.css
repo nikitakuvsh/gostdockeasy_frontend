@@ -1,0 +1,35 @@
+.header {
+    background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
+    padding: 16px 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .header__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  
+  .header__content {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  
+  .header__link {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 16px;
+    transition: color 0.3s ease, transform 0.2s ease;
+    padding: 8px 12px;
+    border-radius: 8px;
+  }
+  
+  .header__link:hover {
+    color: #ffdf6b;
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+  }
+  

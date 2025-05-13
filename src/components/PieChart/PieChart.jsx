@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import "./PieChart.css";
@@ -6,28 +6,34 @@ import "./PieChart.css";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function PieChart() {
-  const facultyData = [
-    {
-      faculty: "Факультет графики и искусства книги имени В.А. Фаворского",
-      count: 50,
-    },
-    { faculty: "Факультет издательского дела и журналистики", count: 70 },
-    { faculty: "Факультет информационных технологий", count: 30 },
-    { faculty: "Факультет машиностроения", count: 20 },
-    { faculty: "Полиграфический факультет", count: 40 },
-    { faculty: "Транспортный факультет", count: 25 },
-    { faculty: "Факультет урбанистики и городского хозяйства", count: 15 },
-    { faculty: "Факультет химической технологии и биотехнологии", count: 35 },
-    { faculty: "Факультет экономики и управления", count: 45 },
-  ];
+  const [facultyData, setFacultyData] = useState([]);
 
-  const total = facultyData.reduce((sum, item) => sum + item.count, 0);
+  useEffect(() => {
+    async function fetchFacultyData() {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_API}/stats`);
+        if (!response.ok) {
+          throw new Error(`Ошибка HTTP: ${response.status}`);
+        }
+        const data = await response.json();
+        setFacultyData(data);
+      } catch (error) {
+        console.error("Ошибка при загрузке данных факультетов:", error);
+      }
+    }
+
+    fetchFacultyData();
+  }, []);
+
+
+  const total = facultyData.reduce((sum, item) => sum + item.submissions, 0);
+
   const data = {
     labels: facultyData.map((item) => item.faculty),
     datasets: [
       {
         label: "Доля конверсий",
-        data: facultyData.map((item) => item.count),
+        data: facultyData.map((item) => item.submissions),
         backgroundColor: [
           "rgba(255, 99, 132, 0.6)",
           "rgba(54, 162, 235, 0.6)",
@@ -76,10 +82,14 @@ export default function PieChart() {
 
   return (
     <div className="pie-chart__container">
-        <h2 className="pie-chart__title">Распределение конверсий по факультетам</h2>
-        <div className="pie-chart__content">
-            <Pie data={data} options={options} />
-        </div>
+      <h2 className="pie-chart__title">Распределение конверсий по факультетам</h2>
+      <div className="pie-chart__content">
+        {facultyData.length === 0 ? (
+          <p>Загрузка данных...</p>
+        ) : (
+          <Pie data={data} options={options} />
+        )}
+      </div>
     </div>
-  )
+  );
 }
